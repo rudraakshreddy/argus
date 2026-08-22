@@ -1,0 +1,124 @@
+﻿# docker-compose.yml
+# ===================
+# Full local development stack for the Fraud Risk Engine.
+#
+# Services:
+#   api       - FastAPI scoring server (port 8000)
+#   dashboard - Streamlit monitoring dashboard (port 8501)
+#   airflow   - Apache Airflow webserver + scheduler (port 8080)
+#
+# Usage:
+#   make up            -> start all services
+#   make up-api        -> start API only
+#   docker compose logs -f api
+#
+# Environment variables: copy .env.example to .env and fill in.
+
+version: "3.9"
+
+x-common-env: &common-env
+  PYTHONUNBUFFERED: "1"
+  PYTHONPATH: /app
+
+services:
+  # ------------------------------------------------------------------
+  # FastAPI Scoring API
+  # ------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: serving/Dockerfile
+    image: fraud-risk-engine-api:latest
+    container_name: fraud_api
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *common-env
+    volumes:
+      # Mount SQLite database (persisted on host)
+      - ./db:/app/db
+      # Mount model artifacts (avoids rebuilding image on retrain)
+      - ./models:/app/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ------------------------------------------------------------------
+  # Streamlit Dashboard
+  # ------------------------------------------------------------------
+  dashboard:
+    image: python:3.11-slim
+    container_name: fraud_dashboard
+    working_dir: /app
+    ports:
+      - "8501:8501"
+    environment:
+      <<: *common-env
+      # Point dashboard to local API (container network hostname)
+      API_BASE_URL: "http://api:8000"
+    volumes:
+      - ./dashboard:/app/dashboard
+      - ./models:/app/models
+      - ./db:/app/db
+      - ./processing:/app/processing
+      - ./modeling:/app/modeling
+    command: >
+      bash -c "pip install -q -r /app/dashboard/requirements.txt &&
+               streamlit run /app/dashboard/app.py
+               --server.port=8501
+               --server.address=0.0.0.0
+               --server.headless=true
+               --browser.gatherUsageStats=false"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Apache Airflow (webserver + scheduler in single container for dev)
+  # ------------------------------------------------------------------
+  airflow:
+    image: apache/airflow:2.9.3-python3.11
+    container_name: fraud_airflow
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *common-env
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__DAGS_FOLDER: /app/automation/dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////app/airflow/airflow.db
+      AIRFLOW__WEBSERVER__SECRET_KEY: "fraud-risk-engine-airflow-secret"
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+    volumes:
+      - ./automation/dags:/app/automation/dags
+      - ./models:/app/models
+      - ./db:/app/db
+      - ./data:/app/data
+      - ./airflow_db:/app/airflow
+      - .:/app/project          # Full project mount for DAG task execution
+    command: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create
+          --username admin --password admin
+          --firstname Admin --lastname User
+          --role Admin --email admin@fraud-engine.local &&
+        airflow scheduler &
+        airflow webserver --port 8080
+      "
+    restart: unless-stopped
+
+volumes:
+  # Named volume placeholders (actual data in bind mounts above)
+  airflow_db:
+
+networks:
+  default:
+    name: fraud_engine_net

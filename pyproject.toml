@@ -1,0 +1,22 @@
+﻿[build-system]
+requires = ["setuptools>=72", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "fraud-risk-engine"
+version = "1.0.0"
+description = "Fraud & Anomaly Risk-Scoring Engine — Sem 8 Major Project"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+log_cli = true
+log_cli_level = "INFO"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP"]

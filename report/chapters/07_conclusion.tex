@@ -1,0 +1,63 @@
+﻿%% chapters/07_conclusion.tex
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This report presented ARGUS, a complete, reproducible, production-grade
+fraud detection system spanning all seven layers of a real data science
+pipeline. Key findings:
+
+\begin{enumerate}
+    \item \textbf{XGBoost is the strongest model} on the IEEE-CIS dataset,
+          achieving AUPRC $> 0.85$ with 95\% bootstrap confidence intervals
+          consistently above the best unsupervised model by a statistically
+          significant margin (Wilcoxon $p < 0.05$).
+    \item \textbf{Cost-optimal thresholding reduces decision error} compared
+          to the naive $\theta = 0.5$ convention. The expected per-transaction
+          cost at $\theta^*$ is reported in Table~\ref{tab:model_comparison}.
+    \item \textbf{Missingness is a fraud signal.} Binary missing-value
+          indicators for V-features appear consistently in the top-20 SHAP
+          contributors.
+    \item \textbf{The Autoencoder is competitive} for an unsupervised approach,
+          demonstrating that reconstruction-error anomaly scoring is viable
+          when labelled data is unavailable.
+    \item \textbf{The full system is deployable.} A single
+          \texttt{make up} command starts all services.
+          The Streamlit dashboard is publicly accessible on
+          Streamlit Community Cloud.
+\end{enumerate}
+
+\subsection{Limitations}
+
+\begin{itemize}
+    \item The evaluation is on a static retrospective dataset.
+          Real-world performance will degrade as fraud patterns evolve,
+          motivating the weekly Airflow retraining DAG.
+    \item The Autoencoder is trained on CPU only, limiting architecture
+          depth on hardware without discrete GPU.
+    \item Cost parameters are approximations; a production deployment
+          would instrument actual analyst time and fraud recovery rates.
+\end{itemize}
+
+\subsection{Future Work}
+
+\begin{itemize}
+    \item Graph Neural Networks on the transaction bipartite graph
+          (card to email domain) for relational fraud signals.
+    \item Online learning with concept drift adaptation (ADWIN detector).
+    \item Multi-objective threshold optimisation balancing cost, equity,
+          and regulatory compliance.
+\end{itemize}
+
+\subsection{Reproducibility Statement}
+
+All code is available at \url{https://github.com/rudraakshreddy/argus}
+under the Apache~2.0 licence. The complete experiment is reproducible with:
+\begin{lstlisting}[language=bash, caption={Full pipeline execution.}]
+git clone https://github.com/rudraakshreddy/argus.git
+cd argus
+pip install -r requirements.txt
+make run-pipeline
+make report
+make up
+\end{lstlisting}

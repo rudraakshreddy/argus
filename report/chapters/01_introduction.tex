@@ -1,0 +1,62 @@
+﻿%% chapters/01_introduction.tex
+
+\section{Introduction}
+\label{sec:intro}
+
+Fraudulent transactions impose enormous costs on the global financial system.
+Industry estimates suggest that card fraud alone exceeds \ billion annually,
+with e-commerce fraud growing at compound rates above 20\% \citep{ieeecisFraud2019}.
+Traditional rule-based detection systems suffer from two fundamental limitations:
+they require expert-crafted rules that become stale as fraud patterns evolve,
+and they cannot express the probabilistic uncertainty inherent to anomaly scoring.
+
+Machine learning approaches address these limitations but introduce their own
+challenges. Fraud data is heavily imbalanced --- legitimate transactions
+constitute 96--99\% of all records --- which invalidates accuracy as a metric
+and demands specialised resampling or cost-sensitive training strategies.
+Furthermore, a deployed model must not merely classify; it must provide
+a defensible, quantified cost-benefit trade-off that allows an analyst or
+compliance team to set the operating threshold rationally.
+
+This report describes \textbf{ARGUS} (Adaptive Real-time Grading and
+Unsupervised Scoring), a complete seven-layer fraud detection system
+structured to mirror the architecture of a real data science or trading
+analytics team:
+
+\begin{enumerate}
+    \item \textbf{Ingestion:} IEEE-CIS transaction and identity data loaded
+          into a normalised SQLite schema.
+    \item \textbf{Storage:} Relational tables with referential integrity
+          and indexed query paths.
+    \item \textbf{Processing:} A leak-free \texttt{sklearn} Pipeline covering
+          log-amount features, cyclical time encoding, missing-value flags,
+          frequency encoding, leak-free target encoding, and PCA compression
+          of 339 Vesta V-features.
+    \item \textbf{Modelling:} Four models spanning supervised and unsupervised
+          paradigms, with Bayesian hyperparameter optimisation and rigorous
+          cross-validation.
+    \item \textbf{Evaluation:} AUPRC-primary benchmarking, bootstrap
+          confidence intervals, Wilcoxon significance tests, and cost-curve
+          analysis for optimal threshold selection.
+    \item \textbf{Serving:} FastAPI endpoint containerised with Docker,
+          with real-time SHAP explanations and {99} < 100$\,ms latency.
+    \item \textbf{Automation:} Apache Airflow DAGs for weekly ingestion and
+          AUPRC-gated model retraining.
+\end{enumerate}
+
+\subsection{Contributions}
+
+The primary contributions of this work are:
+\begin{itemize}
+    \item A rigorous benchmark of four fraud detection models (supervised and
+          unsupervised) on the IEEE-CIS dataset with statistical confidence intervals.
+    \item A cost-theoretic framework for decision threshold selection that
+          replaces the arbitrary $\theta = 0.5$ convention with Expected Cost
+          minimisation.
+    \item A fully deployable, containerised inference pipeline with
+          Prometheus-format monitoring, SHAP explainability, and Population
+          Stability Index drift detection.
+    \item Complete reproducibility: all code, experiments, and this report
+          are version-controlled and public at
+          \url{https://github.com/rudraakshreddy/argus}.
+\end{itemize}

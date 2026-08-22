@@ -1,0 +1,88 @@
+﻿%% chapters/02_literature_review.tex
+
+\section{Literature Review}
+\label{sec:litreview}
+
+\subsection{Class Imbalance in Fraud Detection}
+
+The severe class imbalance in fraud datasets (typically 0.1--5\% positives)
+renders standard accuracy misleading and challenges gradient-based learners
+whose loss functions treat all samples equally.
+\citet{chawla2002smote} introduced SMOTE, which generates synthetic minority
+samples by interpolating between existing minority instances in feature space,
+providing a robust alternative to naive oversampling.
+\citet{han2005borderline} extended this with Borderline-SMOTE, focusing
+synthetic generation on the decision boundary where the model's uncertainty
+is greatest.
+We compare five imbalance strategies in Section~\ref{sec:methodology}.
+
+\subsection{Gradient Boosting for Fraud Detection}
+
+\citet{chen2016xgboost} introduced XGBoost, which combines regularised
+gradient boosting with an efficient tree construction algorithm (\textit{hist}
+method) and built-in support for class weighting via the
+\texttt{scale\_pos\_weight} hyperparameter.
+XGBoost has consistently placed among the top performers in fraud detection
+benchmarks on Kaggle, including the IEEE-CIS competition.
+We use Optuna \citep{akiba2019optuna} with the Tree-structured Parzen Estimator
+(TPE) sampler for Bayesian hyperparameter optimisation over 100 trials.
+
+\subsection{Unsupervised Anomaly Detection}
+
+\citet{liu2008isolation} proposed Isolation Forest, which exploits the
+intuition that anomalies are few and different, isolating them with
+shorter average path lengths in random trees.
+Unlike density-based methods, Isolation Forest scales linearly with dataset
+size and handles high-dimensional data without requiring a distance metric.
+
+\citet{pimentel2014review} provide a comprehensive taxonomy of novelty
+detection methods. Autoencoder-based anomaly detection, a neural approach,
+trains a bottleneck network to reconstruct normal data; anomalies
+produce high reconstruction error because they lie off the learned normal
+manifold \citep{pimentel2014review}.
+We implement a PyTorch Autoencoder trained exclusively on legitimate
+transactions, using the Adam optimiser \citep{kingma2015adam} with
+a ReduceLROnPlateau scheduler and gradient norm clipping.
+
+\subsection{Evaluation Metrics for Imbalanced Data}
+
+\citet{davis2006precision} demonstrate that the Precision-Recall (PR) curve
+provides a more informative picture than the ROC curve when classes are
+highly imbalanced, because it directly characterises the trade-off between
+false alarms and missed detections.
+\citet{chicco2020mcc} show that the Matthews Correlation Coefficient (MCC)
+is a more balanced single-number summary than F1 for imbalanced binary
+classification, as it accounts for all four cells of the confusion matrix.
+We report AUPRC as the primary metric, with AUROC, MCC, F1, and Brier Score
+as secondary metrics.
+
+\subsection{Cost-Sensitive Learning and Threshold Selection}
+
+\citet{elkan2001cost} formalise the cost-sensitive learning framework,
+showing that the optimal threshold for a calibrated classifier can be
+derived analytically from the misclassification cost ratio:
+\begin{equation}
+    \theta^* = \frac{c_{FP}}{c_{FP} + c_{FN}}
+    \label{eq:elkan_threshold}
+\end{equation}
+In practice, because classifiers are not perfectly calibrated, we sweep
+the threshold numerically and select $\theta^*$ by minimising the Expected
+Cost curve over the validation set.
+
+\subsection{Explainability via SHAP}
+
+\citet{lundberg2017shap} introduced SHAP (SHapley Additive exPlanations),
+grounding feature attribution in cooperative game theory.
+TreeExplainer provides exact SHAP values for tree-based models in
+polynomial time; KernelExplainer provides model-agnostic approximations
+via background sampling.
+We use TreeExplainer for XGBoost and KernelExplainer for Logistic Regression,
+embedding the top-3 SHAP contributors in every API response.
+
+\subsection{Target Encoding}
+
+\citet{micci2001target} introduced smoothed target encoding, replacing
+categorical levels with their smoothed empirical fraud rate.
+To prevent target leakage, we apply cross-fitting: each fold's
+encoding is computed from the out-of-fold training labels,
+ensuring no transaction sees its own label during feature computation.

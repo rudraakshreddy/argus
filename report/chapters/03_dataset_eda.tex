@@ -1,0 +1,101 @@
+﻿%% chapters/03_dataset_eda.tex
+
+\section{Dataset and Exploratory Data Analysis}
+\label{sec:dataset}
+
+\subsection{IEEE-CIS Fraud Detection Dataset}
+
+The IEEE-CIS Fraud Detection dataset \citep{ieeecisFraud2019} was released
+in partnership with Vesta Corporation for a 2019 Kaggle competition.
+It comprises two relational tables:
+
+\begin{itemize}
+    \item \textbf{Transactions table:} 590,540 rows $\times$ 394 features,
+          including transaction amount, product category, card attributes
+          (card1--card6), address codes, email domains, distance features
+          (dist1, dist2), counting features (C1--C14), timedelta features
+          (D1--D15), match features (M1--M9), and 339 Vesta-proprietary
+          engineered features (V1--V339).
+    \item \textbf{Identity table:} 144,233 rows $\times$ 41 features,
+          including device type, device info, and identity features
+          (id\_01--id\_38).
+\end{itemize}
+
+Tables are joined on \texttt{TransactionID} via a left join, yielding
+590,540 merged rows with 431 columns after join.
+The binary target label \texttt{isFraud} is provided in the transaction table.
+
+\subsection{Summary Statistics}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dataset summary statistics.}
+  \label{tab:dataset_stats}
+  \begin{tabular}{lr}
+    \toprule
+    \textbf{Statistic} & \textbf{Value} \\
+    \midrule
+    Total transactions         & 590,540 \\
+    Fraud transactions         & 20,663 \\
+    Legitimate transactions    & 569,877 \\
+    Fraud prevalence           & 3.499\% \\
+    Total features (post-join) & 431 \\
+    Numeric features           & 370 \\
+    Categorical features       & 61 \\
+    Overall null rate          & 47.2\% \\
+    Median transaction amount  & \.00 \\
+    Median fraud amount        & \.00 \\
+    Median legitimate amount   & \.00 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Class Imbalance}
+
+Figure~\ref{fig:class_balance} shows the severe class imbalance:
+only 3.5\% of transactions are fraudulent.
+This renders raw accuracy meaningless (a classifier predicting all-legitimate
+achieves 96.5\% accuracy) and mandates AUPRC as the primary evaluation metric.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.45\textwidth]{figures/eda/01_class_balance}
+  \caption{Class distribution of the IEEE-CIS dataset.}
+  \label{fig:class_balance}
+\end{figure}
+
+\subsection{Transaction Amount Distribution}
+
+Fraud transactions exhibit a higher median amount than legitimate ones
+(\ vs.\ \), but significant overlap makes amount alone insufficient
+for discrimination (Figure~\ref{fig:amount_dist}).
+The log-transform normalises the heavy right tail.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.65\textwidth]{figures/eda/02_amount_distribution}
+  \caption{KDE of $\log(1 + \texttt{TransactionAmt})$ by class.}
+  \label{fig:amount_dist}
+\end{figure}
+
+\subsection{Temporal Patterns}
+
+The fraud rate varies significantly by hour of day and day of week
+(Figure~\ref{fig:temporal_heatmap}), motivating the cyclical time
+encoding described in Section~\ref{sec:features}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/eda/03_temporal_heatmap}
+  \caption{Hourly fraud rate by day of week (0=Monday reference).}
+  \label{fig:temporal_heatmap}
+\end{figure}
+
+\subsection{Missingness}
+
+The V-feature block (V1--V339) exhibits structured missingness,
+with many features exceeding 70\% null rate.
+Missingness is non-random (MCAR assumption fails): missing V-features
+correlate with device type and, critically, with fraud status.
+We exploit this by creating binary missingness indicator features for
+all columns exceeding 5\% null rate.

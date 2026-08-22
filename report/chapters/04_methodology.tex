@@ -1,0 +1,143 @@
+﻿%% chapters/04_methodology.tex
+
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Experimental Protocol}
+
+All experiments follow a strict protocol to ensure reproducibility and
+prevent data leakage:
+
+\begin{itemize}
+    \item \textbf{Data split:} Stratified random split: 80\% train / 20\% test,
+          \texttt{random\_state=42}. The test set is untouched until final
+          benchmark evaluation.
+    \item \textbf{Cross-validation:} 5-fold stratified CV (\texttt{StratifiedKFold})
+          for hyperparameter search and imbalance strategy selection.
+    \item \textbf{Primary metric:} AUPRC. Accuracy is never reported.
+    \item \textbf{Threshold:} Selected by Expected Cost minimisation at
+          $\theta^* = \arg\min_\theta \mathbb{E}[\text{Cost}](\theta)$,
+          not at 0.5.
+    \item \textbf{Reproducibility:} All \texttt{random\_state} arguments
+          fixed at 42. Requirements pinned in \texttt{requirements.txt}.
+\end{itemize}
+
+\subsection{Feature Engineering Pipeline}
+\label{sec:features}
+
+All transformations are implemented as \texttt{sklearn}-compatible
+\texttt{BaseEstimator} / \texttt{TransformerMixin} subclasses, assembled
+into a single \texttt{Pipeline} object serialised via \texttt{joblib}.
+
+\subsubsection{Amount Features}
+
+\[
+    \texttt{log\_amt}_i = \log(1 + \texttt{TransactionAmt}_i)
+\]
+\[
+    \texttt{amt\_zscore}_i = \frac{\texttt{TransactionAmt}_i - \bar{\mu}_{\texttt{card1}}}
+                                  {\max(\hat{\sigma}_{\texttt{card1}},\, \epsilon)}
+\]
+where $\bar{\mu}_{\texttt{card1}}$ and $\hat{\sigma}_{\texttt{card1}}$ are
+the card-level mean and standard deviation fit only on training data.
+
+\subsubsection{Cyclical Time Features}
+
+\[
+    \texttt{hour\_sin}_i = \sin\!\left(\frac{2\pi h_i}{24}\right), \quad
+    \texttt{hour\_cos}_i = \cos\!\left(\frac{2\pi h_i}{24}\right)
+\]
+where  = \lfloor \texttt{TransactionDT}_i / 3600 \rfloor \bmod 24$.
+Analogous encoding for day-of-week preserves cyclic continuity.
+
+\subsubsection{V-Feature PCA}
+
+The 339 Vesta V-features are median-imputed, standardised, and
+compressed to 30 principal components retaining $>95\%$ of cumulative
+explained variance. This reduces noise and training time without
+significant information loss.
+
+\subsubsection{Target Encoding (Leak-Free)}
+
+Email domains and card type are target-encoded using smoothed estimates:
+\[
+    \hat{p}_c = \lambda_c \cdot \hat{p}_{c,\text{raw}} + (1 - \lambda_c) \cdot \bar{y}_{\text{global}}
+\]
+where $\lambda_c = n_c / (n_c + k)$, =10$ is a smoothing constant,
+and $\hat{p}_{c,\text{raw}}$ is the raw fraud rate for category $.
+Cross-fitting (5 folds) ensures each row is encoded using only
+out-of-fold label information, eliminating target leakage.
+
+\subsection{Imbalance Handling}
+
+Table~\ref{tab:imbalance} shows the 5-fold CV AUPRC for five strategies.
+The winning strategy is applied to all subsequent model training.
+
+\begin{table}[htbp]
+  \centering
+  \caption{5-fold CV AUPRC for imbalance handling strategies (Logistic Regression probe).}
+  \label{tab:imbalance}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Strategy} & \textbf{Mean AUPRC} & \textbf{Std} \\
+    \midrule
+    None (baseline)           & --- & --- \\
+    Random Undersampling      & --- & --- \\
+    SMOTE                     & --- & --- \\
+    Borderline-SMOTE          & --- & --- \\
+    Class-Weight (cost-sens.) & --- & --- \\
+    \bottomrule
+  \end{tabular}
+  \smallskip\par
+  {\small \textit{Note:} Values populated after running \texttt{processing/imbalance\_handler.py}.}
+\end{table}
+
+\subsection{Model Architectures}
+
+\subsubsection{Logistic Regression (Calibrated)}
+ElasticNet regularisation ($ ratio tuned via Optuna, 50 trials).
+Post-hoc isotonic calibration via \texttt{CalibratedClassifierCV} (5-fold).
+SHAP values via \texttt{KernelExplainer} (100-sample background).
+
+\subsubsection{XGBoost}
+\texttt{tree\_method='hist'} (CPU-optimised histogram algorithm).
+\texttt{scale\_pos\_weight} $= n_{\text{neg}} / n_{\text{pos}}$ for
+cost-sensitive training.
+100-trial Optuna TPE search over: max\_depth, learning\_rate,
+n\_estimators, subsample, colsample\_bytree, colsample\_bylevel,
+min\_child\_weight, $\gamma$, $\alpha$, $\lambda$.
+Early stopping (50 rounds) on validation AUPRC.
+SHAP via \texttt{TreeExplainer} (exact values).
+
+\subsubsection{Isolation Forest}
+Contamination $= \bar{y}_{\text{train}}$ (estimated fraud rate).
+Grid search over \{100, 200, 500\} estimators,
+\{auto, 0.5, 0.8\} max\_samples, \{0.5, 0.8, 1.0\} max\_features.
+Anomaly scores negated and normalised to $[0, 1]$ for consistent
+threshold handling across models.
+
+\subsubsection{Autoencoder}
+
+Input($) $\to$ Linear(128) $\to$ BN $\to$ LeakyReLU(0.1) $\to$ DO(0.2)
+$\to$ Linear(64) $\to$ BN $\to$ LeakyReLU(0.1) $\to$ DO(0.2)
+$\to$ Linear(32) [bottleneck]
+$\to$ Linear(64) $\to$ BN $\to$ LeakyReLU(0.1) $\to$ DO(0.2)
+$\to$ Linear(128) $\to$ BN $\to$ LeakyReLU(0.1) $\to$ DO(0.2)
+$\to$ Linear($)
+
+Trained exclusively on legitimate transactions ({\text{legit}}$).
+Anomaly score: $\text{MSE}(x, \hat{x})$ per sample.
+Early stopping: patience 10 epochs on validation reconstruction loss.
+
+\subsection{Cost-Optimal Threshold Selection}
+
+For a classifier with calibrated probabilities $\hat{p}(x)$, the
+expected per-transaction cost at threshold $\theta$ is:
+\begin{equation}
+    \mathbb{E}[\text{Cost}](\theta) =
+    \frac{1}{N} \Big[ |\text{FP}(\theta)| \cdot c_{FP} + |\text{FN}(\theta)| \cdot c_{FN} \Big]
+\end{equation}
+with {FP} = \.00$ (30\,min analyst review at \/hr) and
+{FN} = \.00$ (median IEEE-CIS fraud transaction amount).
+The optimal threshold $\theta^* = \arg\min_\theta \mathbb{E}[\text{Cost}](\theta)$
+is found by grid search over 500 equally-spaced values in 0 1$.

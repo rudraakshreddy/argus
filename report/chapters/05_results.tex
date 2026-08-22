@@ -1,0 +1,100 @@
+﻿%% chapters/05_results.tex
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Benchmark Comparison}
+
+Table~\ref{tab:model_comparison} presents the full benchmark comparison
+of all four models on the held-out test set.
+AUPRC and AUROC are reported with 95\% bootstrap confidence intervals
+($n=1{,}000$ resamples with replacement, stratified by class label).
+All threshold-dependent metrics are evaluated at the cost-optimal threshold
+$\theta^*$ for each model.
+
+\input{figures/models/benchmark_table}
+
+\subsection{ROC and Precision-Recall Curves}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/models/01_roc_curves}
+    \caption{ROC curves.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/models/02_pr_curves}
+    \caption{Precision-Recall curves (primary metric).}
+  \end{subfigure}
+  \caption{Performance curves for all four models. Stars mark operating
+           points at cost-optimal threshold $\theta^*$.}
+  \label{fig:roc_pr}
+\end{figure}
+
+\subsection{Cost-Curve Analysis}
+
+Figure~\ref{fig:cost_curves} shows the Expected Cost curves for all models.
+Vertical dotted lines mark each model's $\theta^*$.
+XGBoost achieves the lowest per-transaction expected cost, validating its
+selection as the production model.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.82\textwidth]{figures/models/cost_curve_all_models}
+  \caption{Expected Cost per transaction vs.\ decision threshold.
+           $c_{FP}=\$12$, $c_{FN}=\$850$.}
+  \label{fig:cost_curves}
+\end{figure}
+
+\subsubsection{Sensitivity Analysis}
+
+Figure~\ref{fig:sensitivity} demonstrates how $\theta^*$ shifts as the
+$c_{FP}/c_{FN}$ ratio changes. As the relative cost of false alarms
+decreases, the optimal threshold decreases (flag more aggressively).
+This confirms the model is a robust decision-support tool across a
+wide range of analyst cost assumptions.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.72\textwidth]{figures/models/cost_sensitivity}
+  \caption{Optimal threshold $\theta^*$ vs.\ $c_{FP}/c_{FN}$ ratio (log scale).}
+  \label{fig:sensitivity}
+\end{figure}
+
+\subsection{Confusion Matrices}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/models/03_confusion_matrices}
+  \caption{Confusion matrices at $\theta^*$ for all four models.}
+  \label{fig:confusion}
+\end{figure}
+
+\subsection{Calibration}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.80\textwidth]{figures/models/04_calibration_curves}
+  \caption{Reliability diagrams for supervised models.
+           Near-diagonal curves indicate good calibration.}
+  \label{fig:calibration}
+\end{figure}
+
+\subsection{SHAP Explainability}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/shap/xgb_shap_beeswarm_v1}
+  \caption{XGBoost SHAP beeswarm plot (top-20 features by mean absolute SHAP value).
+           Colour encodes feature value (red=high, blue=low).
+           Positive SHAP values push toward fraud classification.}
+  \label{fig:shap}
+\end{figure}
+
+\subsection{Statistical Significance}
+
+A two-sided Wilcoxon signed-rank test on per-sample squared errors
+compares the best supervised model (XGBoost) against the best
+unsupervised model (Autoencoder). Full results are annotated in
+the caption of Table~\ref{tab:model_comparison}.

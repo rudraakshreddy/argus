@@ -1,0 +1,84 @@
+﻿%% chapters/06_deployment.tex
+
+\section{System Architecture and Deployment}
+\label{sec:deployment}
+
+\subsection{Overview}
+
+ARGUS is structured as a seven-service Docker Compose stack, enabling
+complete local deployment with a single \texttt{make up} command.
+The Streamlit monitoring dashboard is additionally deployed to
+Streamlit Community Cloud for public access without requiring Docker.
+
+\subsection{FastAPI Scoring Service}
+
+The scoring API is implemented with FastAPI, containerised in a multi-stage
+Docker image. The container runs as a non-root user for security,
+with a built-in \texttt{HEALTHCHECK} used by Docker Compose for dependency ordering.
+
+The API exposes five endpoints:
+\begin{description}
+    \item[\texttt{POST /score}] Score a single transaction; returns
+         fraud probability, risk level (LOW/MEDIUM/HIGH/CRITICAL),
+         and top-3 SHAP contributors.
+    \item[\texttt{POST /score/batch}] Score up to 1,000 transactions.
+    \item[\texttt{GET /health}] Liveness probe for Docker and orchestrators.
+    \item[\texttt{GET /metrics}] Prometheus-format counters and latency
+         summaries (p50, p95, p99 per endpoint).
+    \item[\texttt{GET /model/info}] Model version, training AUPRC, and
+         active decision threshold.
+\end{description}
+
+All model artifacts are loaded once at startup into a singleton registry,
+making inference calls thread-safe and allocation-free per request.
+Every scored transaction is written to the \texttt{model\_scores} SQLite
+table for audit trail and drift monitoring.
+
+\subsection{Monitoring Dashboard}
+
+The Streamlit dashboard provides three views:
+\begin{enumerate}
+    \item \textbf{Overview:} KPI cards (transactions scored, flagged, flag rate,
+          estimated cost saved, median latency), hourly flag rate sparkline,
+          and sortable table of recent flagged transactions with risk-level badges.
+    \item \textbf{Model Performance:} Benchmark comparison table with
+          bootstrap CIs, interactive ROC and PR curves (Plotly), confusion
+          matrix at $\theta^*$, SHAP bar chart, and calibration curves.
+    \item \textbf{Drift Monitor:} Per-feature PSI bar chart with colour-coded
+          alert thresholds, feature distribution overlays (training vs.\ recent),
+          and API latency trend (p50/p95/p99).
+\end{enumerate}
+
+The dashboard is self-contained: it loads model artifacts directly from
+\texttt{models/} without calling the FastAPI endpoint, ensuring it functions
+on Streamlit Community Cloud where the API is not deployed.
+
+\subsection{Airflow Automation}
+
+Two Apache Airflow DAGs automate the ML lifecycle:
+\begin{description}
+    \item[\texttt{argus\_ingest\_weekly}] Runs every Sunday at 02:00 UTC.
+         Validates source CSVs, merges transaction and identity tables,
+         loads to SQLite, and refreshes EDA figures.
+    \item[\texttt{argus\_retrain\_weekly}] Runs every Monday at 03:00 UTC.
+         Re-runs feature engineering, trains all four models in parallel,
+         evaluates metrics, generates report figures, and gates model
+         promotion on AUPRC improvement $\geq 0.5\%$.
+\end{description}
+
+The promotion gate prevents performance regression: if the newly trained
+XGBoost model does not improve AUPRC by at least 0.005 absolute points
+over the current production model, the existing artifact is retained.
+
+\subsection{Population Stability Index}
+
+For continuous monitoring of input distribution shift, ARGUS computes
+the Population Stability Index (PSI) per feature:
+\begin{equation}
+    \text{PSI}_j = \sum_{b=1}^{B}
+    \left(p_{j,b}^{\text{recent}} - p_{j,b}^{\text{train}}\right)
+    \ln\!\frac{p_{j,b}^{\text{recent}}}{p_{j,b}^{\text{train}}}
+\end{equation}
+where $p_{j,b}$ is the fraction of values of feature $j$ falling in bucket $b$,
+computed using training-quantile bin boundaries ($B=10$ buckets).
+PSI $> 0.2$ triggers a drift alert in the dashboard.

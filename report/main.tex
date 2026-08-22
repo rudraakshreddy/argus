@@ -1,0 +1,107 @@
+﻿%% report/main.tex
+%% ================
+%% Master document for the ARGUS project report.
+%% Elsevier elsarticle document class — double-spaced review mode.
+%%
+%% Compile with:
+%%   pdflatex main.tex
+%%   biber main
+%%   pdflatex main.tex
+%%   pdflatex main.tex
+%%
+%% Or use the Makefile:
+%%   make report
+
+\documentclass[review,12pt,authoryear]{elsarticle}
+
+%% ---- Packages -------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}          % Better typography
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}           % Professional tables (\toprule, \midrule, \bottomrule)
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{longtable}
+\usepackage{siunitx}            % SI units, number formatting
+\usepackage[backend=biber,style=authoryear,natbib=true]{biblatex}
+
+\addbibresource{references.bib}
+
+%% ---- Listings style (Python code) ----------------------------------
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red!60!black},
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  breaklines=true,
+  captionpos=b,
+}
+
+%% ---- Front matter --------------------------------------------------
+\journal{Sem 8 Major Project Report}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{ARGUS: Adaptive Real-time Grading and Unsupervised Scoring\\
+       for Transaction Fraud Detection}
+
+\author[inst1]{Rudraaksh Reddy}
+\affiliation[inst1]{organization={Department of Computer Science and Engineering},
+                    city={[Your Institute]},
+                    country={India}}
+
+\begin{abstract}
+We present \textbf{ARGUS} (Adaptive Real-time Grading and Unsupervised Scoring),
+a production-grade, seven-layer fraud detection system built on the IEEE-CIS
+transaction dataset (590,540 transactions; 3.5\% fraud prevalence).
+The system benchmarks four models --- calibrated Logistic Regression,
+XGBoost (100-trial Bayesian hyperparameter optimisation), Isolation Forest,
+and a PyTorch Autoencoder trained exclusively on legitimate transactions ---
+evaluated with AUPRC as the primary metric on a held-out 20\% stratified test set.
+All decision thresholds are selected by Expected Cost minimisation
+({FP}=\$, {FN}=\$) rather than the arbitrary $\theta=0.5$ convention.
+Bootstrap 95\% confidence intervals (=1{,}000$) and Wilcoxon signed-rank tests
+provide statistical rigour for model comparison.
+The best supervised model (XGBoost) achieves AUPRC $>0.85$ and AUROC $>0.96$.
+A FastAPI endpoint containerised with Docker serves real-time scores with
+{99}$ latency below 100\,ms. Weekly retraining is automated via Apache Airflow
+with AUPRC-gated model promotion. An interactive Streamlit dashboard provides
+live monitoring, drift detection (Population Stability Index), and SHAP
+explainability. All code, experiments, and this report are fully reproducible.
+\end{abstract}
+
+\begin{keyword}
+fraud detection \sep anomaly detection \sep XGBoost \sep isolation forest \sep
+autoencoder \sep SMOTE \sep cost-sensitive learning \sep SHAP explainability \sep
+FastAPI \sep Apache Airflow
+\end{keyword}
+
+\end{frontmatter}
+
+%% ---- Chapters ------------------------------------------------------
+\input{chapters/01_introduction}
+\input{chapters/02_literature_review}
+\input{chapters/03_dataset_eda}
+\input{chapters/04_methodology}
+\input{chapters/05_results}
+\input{chapters/06_deployment}
+\input{chapters/07_conclusion}
+
+%% ---- Bibliography --------------------------------------------------
+\printbibliography[heading=bibintoc, title={References}]
+
+\end{document}

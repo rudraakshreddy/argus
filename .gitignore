@@ -1,0 +1,102 @@
+﻿# ===========================
+# ARGUS — .gitignore
+# ===========================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ---- Virtual environments ----
+venv/
+.venv/
+env/
+ENV/
+.env
+!.env.example
+
+# ---- Secrets ----
+*.pem
+*.key
+*.token
+secrets.toml
+.streamlit/secrets.toml
+
+# ---- Data (large raw files — do NOT commit to git) ----
+data/raw/
+data/processed/*.parquet
+data/processed/*.csv
+
+# ---- Model artifacts (large binary files) ----
+# Commit benchmark_summary.json and results JSONs (small).
+# Do NOT commit joblib/pt/npy files (hundreds of MB).
+models/*.joblib
+models/*.pt
+models/*.npy
+models/feature_pipeline_*.joblib
+
+# Commit these (small, needed by dashboard on Community Cloud)
+!models/benchmark_summary.json
+!models/all_metrics.json
+!models/cost_analysis_results.json
+!models/wilcoxon_test.json
+!models/feature_names_v1.json
+!models/*_results.json
+
+# ---- Database ----
+db/*.db
+db/*.db-shm
+db/*.db-wal
+
+# ---- Report artefacts ----
+report/*.pdf
+report/*.aux
+report/*.bbl
+report/*.bcf
+report/*.blg
+report/*.fls
+report/*.fdb_latexmk
+report/*.log
+report/*.out
+report/*.run.xml
+report/*.synctex.gz
+report/*.toc
+
+# ---- Figures (generated — commit only if needed for dashboard) ----
+report/figures/
+!report/figures/.gitkeep
+
+# ---- Docker ----
+.docker/
+
+# ---- Airflow ----
+airflow_db/
+airflow/logs/
+airflow/plugins/
+airflow.cfg
+webserver_config.py
+
+# ---- IDE / OS ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+*.ipynb
+
+# ---- Pytest ----
+.pytest_cache/
+.coverage
+htmlcov/
