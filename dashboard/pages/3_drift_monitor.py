@@ -133,7 +133,7 @@ if X_train is not None and X_test is not None and feat_names:
 
     selected_feat = st.selectbox(
         "Select feature to inspect",
-        options=feat_names[:50],
+        options=feat_names,
         index=feat_names.index(top_drift_features[0]) if top_drift_features and top_drift_features[0] in feat_names else 0,
     )
     feat_idx = feat_names.index(selected_feat) if selected_feat in feat_names else 0
