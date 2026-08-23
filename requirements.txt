@@ -13,3 +13,4 @@ xgboost
 joblib
 pyarrow
 scipy
+setuptools
