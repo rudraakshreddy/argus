@@ -1,13 +1,3 @@
-﻿# deployment/streamlit_cloud_config.toml
-# ========================================
-# Streamlit Community Cloud deployment configuration.
-#
-# Repo:      github.com/rudraakshreddy/argus
-# Branch:    main
-# Main file: dashboard/app.py
-#
-# Community Cloud reads this automatically on deploy.
-
 [theme]
 primaryColor        = "#d7191c"
 backgroundColor     = "#0e1117"
