@@ -1,0 +1,82 @@
+[
+  {
+    "Feature": "C13",
+    "Mean |SHAP|": 0.3649643063545227
+  },
+  {
+    "Feature": "card1_freq",
+    "Mean |SHAP|": 0.34664103388786316
+  },
+  {
+    "Feature": "pca_v01",
+    "Mean |SHAP|": 0.3303210735321045
+  },
+  {
+    "Feature": "TransactionAmt",
+    "Mean |SHAP|": 0.26041385531425476
+  },
+  {
+    "Feature": "pca_v02",
+    "Mean |SHAP|": 0.20590826869010925
+  },
+  {
+    "Feature": "C14",
+    "Mean |SHAP|": 0.19259458780288696
+  },
+  {
+    "Feature": "C1",
+    "Mean |SHAP|": 0.18369075655937195
+  },
+  {
+    "Feature": "log_amt",
+    "Mean |SHAP|": 0.1755051165819168
+  },
+  {
+    "Feature": "amt_zscore",
+    "Mean |SHAP|": 0.17006614804267883
+  },
+  {
+    "Feature": "P_emaildomain_target_enc",
+    "Mean |SHAP|": 0.15309523046016693
+  },
+  {
+    "Feature": "C2",
+    "Mean |SHAP|": 0.14966194331645966
+  },
+  {
+    "Feature": "D1",
+    "Mean |SHAP|": 0.14710566401481628
+  },
+  {
+    "Feature": "C5",
+    "Mean |SHAP|": 0.14196866750717163
+  },
+  {
+    "Feature": "C11",
+    "Mean |SHAP|": 0.1353841871023178
+  },
+  {
+    "Feature": "dist1",
+    "Mean |SHAP|": 0.13027521967887878
+  },
+  {
+    "Feature": "R_emaildomain_target_enc",
+    "Mean |SHAP|": 0.12248142808675766
+  },
+  {
+    "Feature": "D15",
+    "Mean |SHAP|": 0.12188830971717834
+  },
+  {
+    "Feature": "pca_v10",
+    "Mean |SHAP|": 0.11969936639070511
+  },
+  {
+    "Feature": "M4_missing",
+    "Mean |SHAP|": 0.11543580144643784
+  },
+  {
+    "Feature": "D10",
+    "Mean |SHAP|": 0.11508285999298096
+  }
+]

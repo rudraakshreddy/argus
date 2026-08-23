@@ -1,4 +1,4 @@
-﻿"""
+"""
 dashboard/pages/2_model_performance.py
 =======================================
 Page 2 — Model performance metrics and explainability.
@@ -190,32 +190,27 @@ st.markdown("---")
 st.subheader("SHAP Feature Importance (XGBoost)")
 shap_path = Path(__file__).parent.parent.parent / "report" / "figures" / "shap" / "xgb_shap_beeswarm_v1.pdf"
 if shap_path.exists():
-    st.info("📄 SHAP beeswarm plot generated at eport/figures/shap/xgb_shap_beeswarm_v1.pdf — view in the report PDF.")
+    st.info("📄 SHAP beeswarm plot generated at report/figures/shap/xgb_shap_beeswarm_v1.pdf — view in the report PDF.")
 else:
-    st.warning("SHAP values not yet computed. Run python modeling/supervised/xgboost_model.py.")
+    st.info("📄 Refer to the final LaTeX report for the full SHAP beeswarm plot.")
 
-feat_names_path = Path(__file__).parent.parent.parent / "models" / "feature_names_v1.json"
-if feat_names_path.exists():
+shap_summary_path = Path(__file__).parent.parent.parent / "models" / "xgb_shap_summary_v1.json"
+if shap_summary_path.exists():
     import json
-    feat_names = json.loads(feat_names_path.read_text())
-    shap_vals = load_shap_values("xgb", version=1)
-    if shap_vals is not None and y_test is not None:
-        mean_abs_shap = np.abs(shap_vals).mean(axis=0)
-        top_n = 20
-        top_idx = np.argsort(mean_abs_shap)[::-1][:top_n]
-        shap_df = pd.DataFrame({
-            "Feature": [feat_names[i] if i < len(feat_names) else f"f{i}" for i in top_idx],
-            "Mean |SHAP|": mean_abs_shap[top_idx],
-        })
-        fig_shap = go.Figure(go.Bar(
-            x=shap_df["Mean |SHAP|"][::-1],
-            y=shap_df["Feature"][::-1],
-            orientation="h",
-            marker_color="#d7191c",
-        ))
-        fig_shap.update_layout(
-            title=f"Top {top_n} Features by Mean |SHAP| Value",
-            xaxis_title="Mean |SHAP value|",
-            height=500, margin=dict(l=0, r=0, t=40, b=0),
-        )
-        st.plotly_chart(fig_shap, use_container_width=True)
+    shap_summary = json.loads(shap_summary_path.read_text())
+    shap_df = pd.DataFrame(shap_summary)
+    
+    fig_shap = go.Figure(go.Bar(
+        x=shap_df["Mean |SHAP|"][::-1],
+        y=shap_df["Feature"][::-1],
+        orientation="h",
+        marker_color="#d7191c",
+    ))
+    fig_shap.update_layout(
+        title=f"Top {len(shap_df)} Features by Mean |SHAP| Value",
+        xaxis_title="Mean |SHAP value|",
+        height=500, margin=dict(l=0, r=0, t=40, b=0),
+    )
+    st.plotly_chart(fig_shap, use_container_width=True)
+else:
+    st.warning("SHAP summary not found. Ensure xgb_shap_summary_v1.json is committed.")
