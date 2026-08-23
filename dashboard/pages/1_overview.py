@@ -1,4 +1,4 @@
-﻿"""
+"""
 dashboard/pages/1_overview.py
 ==============================
 Page 1 — Live transaction overview.
@@ -50,7 +50,7 @@ c2.metric(
 c3.metric("Flag Rate", f"{kpis['flag_rate']*100:.3f}%")
 c4.metric("Median API Latency", f"{kpis['median_latency_ms']:.1f} ms",
           delta_color="off")
-c5.metric("Est. Cost Saved", f"",
+c5.metric("Est. Cost Saved", f"${kpis['expected_cost_saved_usd']:,.2f}",
           delta_color="normal")
 
 st.markdown("---")

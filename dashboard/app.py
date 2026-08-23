@@ -1,4 +1,4 @@
-﻿"""
+"""
 dashboard/app.py
 =================
 Main Streamlit entry point — multi-page fraud monitoring dashboard.
@@ -98,7 +98,7 @@ col1.metric("Transactions Scored (24h)", f"{kpis['total_scored']:,}")
 col2.metric("Flagged (24h)", f"{kpis['n_flagged']:,}",
             delta=f"{kpis['flag_rate']*100:.2f}% flag rate")
 col3.metric("Median Latency", f"{kpis['median_latency_ms']:.1f} ms")
-col4.metric("Est. Cost Saved (24h)", f"")
+col4.metric("Est. Cost Saved (24h)", f"${kpis['expected_cost_saved_usd']:,.2f}")
 
 st.markdown("---")
 st.markdown("Use the **sidebar** or the links above to navigate to detailed pages.")
