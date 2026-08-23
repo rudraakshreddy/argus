@@ -1,0 +1,50 @@
+[
+  {
+    "Model": "Logistic Regression",
+    "Type": "Supervised",
+    "AUPRC": 0.3562,
+    "AUROC": 0.8493,
+    "F1": 0.1529,
+    "MCC": 0.1955,
+    "Brier": 0.0268,
+    "Cost/txn": 8.6529,
+    "theta*": 0.021,
+    "AUPRC_CI": "[0.3404, 0.3721]"
+  },
+  {
+    "Model": "XGBoost",
+    "Type": "Supervised",
+    "AUPRC": 0.7701,
+    "AUROC": 0.9553,
+    "F1": 0.2667,
+    "MCC": 0.3352,
+    "Brier": 0.0206,
+    "Cost/txn": 4.5447,
+    "theta*": 0.085,
+    "AUPRC_CI": "[0.7586, 0.7815]"
+  },
+  {
+    "Model": "Isolation Forest",
+    "Type": "Unsupervised",
+    "AUPRC": 0.082,
+    "AUROC": 0.7179,
+    "F1": 0.0787,
+    "MCC": 0.0661,
+    "Brier": 0.0928,
+    "Cost/txn": 11.0369,
+    "theta*": 0.053,
+    "AUPRC_CI": "[0.0783, 0.0861]"
+  },
+  {
+    "Model": "Autoencoder",
+    "Type": "Unsupervised",
+    "AUPRC": 0.1388,
+    "AUROC": 0.7442,
+    "F1": 0.0029,
+    "MCC": 0.0128,
+    "Brier": 0.035,
+    "Cost/txn": 29.7042,
+    "theta*": 0.003,
+    "AUPRC_CI": "[0.131, 0.1485]"
+  }
+]

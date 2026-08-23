@@ -1,0 +1,10 @@
+{
+  "test": "Wilcoxon signed-rank",
+  "model_A": "XGBoost",
+  "model_B": "Autoencoder",
+  "H0": "Distributions of per-sample squared errors are equal",
+  "statistic": 477529670.0,
+  "p_value": 0.0,
+  "significant_at_0.05": true,
+  "interpretation": "Reject H0 at alpha=0.05. XGBoost significantly outperforms Autoencoder (p=0.0000)."
+}

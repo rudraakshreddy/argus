@@ -1,0 +1,26 @@
+{
+  "model": "IsolationForest",
+  "threshold": 0.053,
+  "auprc": 0.082,
+  "auroc": 0.7179,
+  "precision": 0.0411,
+  "recall": 0.9381,
+  "f1": 0.0787,
+  "mcc": 0.0661,
+  "brier": 0.0928,
+  "expected_cost_per_txn": 11.0369,
+  "n_flagged": 94373,
+  "n_fraud_caught": 3877,
+  "n_fraud_total": 4133,
+  "auprc_ci_lo": 0.0783,
+  "auprc_ci_hi": 0.0861,
+  "auroc_ci_lo": 0.7097,
+  "auroc_ci_hi": 0.7266,
+  "best_cv_auprc": 0.0813,
+  "grid_params": {
+    "n_estimators": 500,
+    "max_samples": "auto",
+    "max_features": 1.0
+  },
+  "contamination": 0.035
+}

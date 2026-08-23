@@ -1,0 +1,32 @@
+{
+  "model": "XGBoost",
+  "threshold": 0.057,
+  "auprc": 0.4972,
+  "auroc": 0.8403,
+  "precision": 0.1316,
+  "recall": 0.7692,
+  "f1": 0.2247,
+  "mcc": 0.2809,
+  "brier": 0.023,
+  "expected_cost_per_txn": 6.684,
+  "n_flagged": 76,
+  "n_fraud_caught": 10,
+  "n_fraud_total": 13,
+  "auprc_ci_lo": 0.2207,
+  "auprc_ci_hi": 0.774,
+  "auroc_ci_lo": 0.6719,
+  "auroc_ci_hi": 0.9755,
+  "best_cv_auprc": 0.3295,
+  "optuna_params": {
+    "n_estimators": 139,
+    "max_depth": 10,
+    "learning_rate": 0.15107024270948044,
+    "subsample": 0.6061695553391381,
+    "colsample_bytree": 0.5090949803242604,
+    "colsample_bylevel": 0.5100427059120604,
+    "min_child_weight": 7,
+    "gamma": 2.6237821581611893,
+    "reg_alpha": 0.0010558813779064837,
+    "reg_lambda": 0.00010929592787219404
+  }
+}

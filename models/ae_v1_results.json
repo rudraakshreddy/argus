@@ -1,0 +1,29 @@
+{
+  "model": "Autoencoder",
+  "threshold": 0.003,
+  "auprc": 0.1388,
+  "auroc": 0.7442,
+  "precision": 0.1714,
+  "recall": 0.0015,
+  "f1": 0.0029,
+  "mcc": 0.0128,
+  "brier": 0.035,
+  "expected_cost_per_txn": 29.7042,
+  "n_flagged": 35,
+  "n_fraud_caught": 6,
+  "n_fraud_total": 4133,
+  "auprc_ci_lo": 0.131,
+  "auprc_ci_hi": 0.1485,
+  "auroc_ci_lo": 0.7358,
+  "auroc_ci_hi": 0.7528,
+  "epochs_trained": 86,
+  "n_params": 126520,
+  "input_dim": 408,
+  "latent_dim": 32,
+  "hidden_dims": [
+    128,
+    64
+  ],
+  "best_val_loss": 0.08697278,
+  "n_legit_train": 455902
+}
