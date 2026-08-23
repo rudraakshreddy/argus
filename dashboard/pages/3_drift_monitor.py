@@ -1,4 +1,4 @@
-﻿"""
+"""
 dashboard/pages/3_drift_monitor.py
 ====================================
 Page 3 — Model drift monitoring.
@@ -46,8 +46,8 @@ def _load_data():
 
 data_dict, feat_names = _load_data()
 
-X_train_path = Path(__file__).parent.parent.parent / "models" / "X_train_v1.npy"
-X_test_path  = Path(__file__).parent.parent.parent / "models" / "X_test_v1.npy"
+X_train_path = Path(__file__).parent.parent.parent / "models" / "X_train_sample_v1.npy"
+X_test_path  = Path(__file__).parent.parent.parent / "models" / "X_test_sample_v1.npy"
 
 X_train = np.load(X_train_path) if X_train_path.exists() else None
 X_test  = np.load(X_test_path)  if X_test_path.exists()  else None
