@@ -1,9 +1,3 @@
-# dashboard/requirements.txt
-# ============================
-# Streamlit Community Cloud deployment requirements.
-# Pin exact versions for reproducibility.
-# Keep minimal — only what the dashboard directly imports.
-
 streamlit==1.38.0
 plotly==5.24.1
 pandas>=2.2.2
@@ -11,5 +5,4 @@ numpy>=1.26.4
 scikit-learn
 xgboost
 joblib
-pyarrow
 scipy
