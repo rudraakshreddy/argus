@@ -14,3 +14,4 @@ joblib
 pyarrow==15.0.0
 scipy
 setuptools
+Pillow==10.2.0
