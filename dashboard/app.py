@@ -81,7 +81,7 @@ st.markdown(
     | Storage | SQLite (normalised schema) |
     | Feature Engineering | Sklearn Pipeline (log-amount, cyclical time, V-PCA, SMOTE) |
     | Models | XGBoost · Logistic Regression · Isolation Forest · Autoencoder |
-    | Threshold | Cost-optimal θ* (c_FP=\, c_FN=\) |
+    | Threshold | Cost-optimal θ* (c_FP=$12, c_FN=$115) |
     | Serving | FastAPI + Docker |
     | Automation | Apache Airflow (weekly retrain DAG) |
 
