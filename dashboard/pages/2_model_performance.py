@@ -193,7 +193,7 @@ st.subheader("SHAP Feature Importance (XGBoost)")
 
 beeswarm_png = Path(__file__).parent.parent.parent / "report" / "figures" / "shap" / "xgb_shap_beeswarm_v1.png"
 if beeswarm_png.exists():
-    st.image(str(beeswarm_png), caption="SHAP Beeswarm Plot (Global Feature Importance)", use_container_width=True)
+    st.image(str(beeswarm_png), caption="SHAP Beeswarm Plot (Global Feature Importance)", use_column_width=True)
 
 
 shap_summary_path = Path(__file__).parent.parent.parent / "models" / "xgb_shap_summary_v1.json"
