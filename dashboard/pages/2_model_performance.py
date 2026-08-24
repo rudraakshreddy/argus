@@ -115,7 +115,7 @@ with col_roc:
     fig_roc.update_layout(
         xaxis_title="False Positive Rate", yaxis_title="True Positive Rate (Recall)",
         legend=dict(x=0.4, y=0.1, font=dict(size=10)),
-        height=400, margin=dict(l=0, r=0, t=30, b=0),
+        height=400, margin=dict(t=40),
     )
     st.plotly_chart(fig_roc, use_container_width=True)
 
@@ -130,6 +130,8 @@ with col_pr:
         if key not in data_dict or y_test is None:
             continue
         prec, rec, _ = precision_recall_curve(y_test, data_dict[key])
+        prec = prec[::50]
+        rec = rec[::50]
         ap = auc(rec, prec)
         fig_pr.add_trace(go.Scatter(
             x=rec, y=prec, mode="lines", name=f"{display} (AUPRC={ap:.3f})",
@@ -138,7 +140,7 @@ with col_pr:
     fig_pr.update_layout(
         xaxis_title="Recall", yaxis_title="Precision",
         legend=dict(x=0.01, y=0.1, font=dict(size=10)),
-        height=400, margin=dict(l=0, r=0, t=30, b=0),
+        height=400, margin=dict(t=40),
     )
     st.plotly_chart(fig_pr, use_container_width=True)
 
@@ -174,7 +176,7 @@ if model_key in data_dict and y_test is not None:
             y=["Actual: Fraud", "Actual: Legitimate"],
             colorscale="Blues", showscale=True,
         )
-        fig_cm.update_layout(height=350, margin=dict(l=0, r=0, t=30, b=0))
+        fig_cm.update_layout(height=350, margin=dict(t=40))
         st.plotly_chart(fig_cm, use_container_width=True)
     with col_cm_stats:
         tn, fp, fn, tp = cm.ravel()
@@ -209,7 +211,7 @@ if shap_summary_path.exists():
     fig_shap.update_layout(
         title=f"Top {len(shap_df)} Features by Mean |SHAP| Value",
         xaxis_title="Mean |SHAP value|",
-        height=500, margin=dict(l=0, r=0, t=40, b=0),
+        height=500, margin=dict(t=40),
     )
     st.plotly_chart(fig_shap, use_container_width=True)
 else:

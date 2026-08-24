@@ -101,7 +101,7 @@ if X_train is not None and X_test is not None and feat_names:
             xaxis_title="Population Stability Index (PSI)",
             barmode="stack",
             height=max(400, len(top_psi) * 18),
-            margin=dict(l=0, r=0, t=40, b=0),
+            margin=dict(t=40),
             legend=dict(orientation="h", y=-0.1),
         )
         st.plotly_chart(fig_psi, use_container_width=True)
@@ -147,7 +147,7 @@ if X_train is not None and X_test is not None and feat_names:
             color_discrete_sequence=["#2c7bb6"],
             labels={"x": selected_feat},
         )
-        fig_tr.update_layout(height=300, margin=dict(l=0, r=0, t=40, b=0), showlegend=False)
+        fig_tr.update_layout(height=300, margin=dict(t=40), showlegend=False)
         st.plotly_chart(fig_tr, use_container_width=True)
 
     with col_dist2:
@@ -158,7 +158,7 @@ if X_train is not None and X_test is not None and feat_names:
             color_discrete_sequence=["#d7191c"],
             labels={"x": selected_feat},
         )
-        fig_te.update_layout(height=300, margin=dict(l=0, r=0, t=40, b=0), showlegend=False)
+        fig_te.update_layout(height=300, margin=dict(t=40), showlegend=False)
         st.plotly_chart(fig_te, use_container_width=True)
 
 st.markdown("---")
@@ -193,7 +193,7 @@ if not scores_df.empty and "latency_ms" in scores_df.columns and "scored_at" in 
     fig_lat.update_layout(
         title="API Scoring Latency (p50 / p95 / p99)",
         yaxis_title="Latency (ms)",
-        height=300, margin=dict(l=0, r=0, t=40, b=0),
+        height=300, margin=dict(t=40),
     )
     st.plotly_chart(fig_lat, use_container_width=True)
 else:

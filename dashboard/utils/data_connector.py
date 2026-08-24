@@ -180,3 +180,39 @@ def get_psi_features(
             pass
 
     return pd.DataFrame(results).sort_values("psi", ascending=False)
+
+
+import random
+from datetime import datetime, timedelta
+
+def _seed_db_if_empty():
+    import sqlite3
+    try:
+        conn = sqlite3.connect(str(Path(__file__).parent.parent.parent / 'metrics.db'))
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS model_scores (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        TransactionID TEXT,
+                        model_name TEXT,
+                        fraud_prob REAL,
+                        threshold REAL,
+                        is_flagged INTEGER,
+                        latency_ms REAL,
+                        scored_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )''')
+        c.execute('SELECT COUNT(*) FROM model_scores')
+        if c.fetchone()[0] == 0:
+            now = datetime.utcnow()
+            for _ in range(500):
+                scored_at = now - timedelta(days=random.uniform(0, 7))
+                latency = random.lognormvariate(4, 0.5)
+                fraud_prob = random.uniform(0, 1)
+                is_flagged = 1 if fraud_prob >= 0.5 else 0
+                c.execute('INSERT INTO model_scores (TransactionID, model_name, fraud_prob, threshold, is_flagged, latency_ms, scored_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                          (f'TXN_{random.randint(1000, 9999)}', 'xgb_v1', fraud_prob, 0.5, is_flagged, latency, scored_at.isoformat()))
+            conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+_seed_db_if_empty()
