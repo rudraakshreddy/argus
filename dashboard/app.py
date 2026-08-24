@@ -68,7 +68,7 @@ st.sidebar.info(
 
 st.title("🛡️ Fraud & Anomaly Risk-Scoring Engine")
 st.markdown(
-    """
+    r"""
     **Sem 8 Major Project** — Real-time fraud detection using ensemble ML models
     trained on the [IEEE-CIS Fraud Detection](https://www.kaggle.com/competitions/ieee-fraud-detection) dataset.
 
@@ -81,7 +81,7 @@ st.markdown(
     | Storage | SQLite (normalised schema) |
     | Feature Engineering | Sklearn Pipeline (log-amount, cyclical time, V-PCA, SMOTE) |
     | Models | XGBoost · Logistic Regression · Isolation Forest · Autoencoder |
-    | Threshold | Cost-optimal θ* (c_FP=$12, c_FN=$115) |
+    | Threshold | Cost-optimal θ* (c_FP=\$12, c_FN=\$115) |
     | Serving | FastAPI + Docker |
     | Automation | Apache Airflow (weekly retrain DAG) |
 

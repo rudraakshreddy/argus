@@ -190,11 +190,7 @@ st.markdown("---")
 
 # ---- Section 4: SHAP ----
 st.subheader("SHAP Feature Importance (XGBoost)")
-shap_path = Path(__file__).parent.parent.parent / "report" / "figures" / "shap" / "xgb_shap_beeswarm_v1.pdf"
-if shap_path.exists():
-    st.info("📄 SHAP beeswarm plot generated at report/figures/shap/xgb_shap_beeswarm_v1.pdf — view in the report PDF.")
-else:
-    st.info("📄 Refer to the final LaTeX report for the full SHAP beeswarm plot.")
+
 
 shap_summary_path = Path(__file__).parent.parent.parent / "models" / "xgb_shap_summary_v1.json"
 if shap_summary_path.exists():

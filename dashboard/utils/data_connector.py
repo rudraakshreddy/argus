@@ -188,7 +188,8 @@ from datetime import datetime, timedelta
 def _seed_db_if_empty():
     import sqlite3
     try:
-        conn = sqlite3.connect(str(Path(__file__).parent.parent.parent / 'metrics.db'))
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(str(DB_PATH))
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS model_scores (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
