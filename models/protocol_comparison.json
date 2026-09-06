@@ -1,0 +1,19 @@
+{
+  "note": "Identical features and model configuration; only the partition rule differs.",
+  "temporal": {
+    "auprc": 0.5015,
+    "auroc": 0.8923,
+    "cost_per_txn": 6.9913,
+    "alert_rate": 0.3737,
+    "precision": 0.083
+  },
+  "random": {
+    "auprc": 0.7329,
+    "auroc": 0.9508,
+    "cost_per_txn": 4.695,
+    "alert_rate": 0.2474,
+    "precision": 0.1314
+  },
+  "auprc_inflation_pct": 46.1,
+  "cost_understatement_pct": -32.8
+}

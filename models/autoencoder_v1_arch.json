@@ -1,0 +1,9 @@
+{
+  "input_dim": 408,
+  "hidden_dims": [
+    128,
+    64
+  ],
+  "latent_dim": 32,
+  "dropout_rate": 0.2
+}

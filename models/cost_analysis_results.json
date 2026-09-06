@@ -1,0 +1,54 @@
+{
+  "Logistic Regression": {
+    "theta_star": 0.325839,
+    "min_cost_per_txn": 8.7045,
+    "cost_no_model": 29.2478,
+    "c_fp": 12.0,
+    "c_fn": 850.0,
+    "alert_rate_at_theta": 0.4289,
+    "amount_weighted_theta_star": 0.5717,
+    "amount_weighted_cost_per_txn": 3.4237,
+    "amount_weighted_alert_rate": 0.1543,
+    "recall_by_count": 0.6373,
+    "recall_by_value": 0.6447
+  },
+  "XGBoost": {
+    "theta_star": 0.086869,
+    "min_cost_per_txn": 6.9935,
+    "cost_no_model": 29.2478,
+    "c_fp": 12.0,
+    "c_fn": 850.0,
+    "alert_rate_at_theta": 0.3612,
+    "amount_weighted_theta_star": 0.3936,
+    "amount_weighted_cost_per_txn": 2.5835,
+    "amount_weighted_alert_rate": 0.0842,
+    "recall_by_count": 0.6449,
+    "recall_by_value": 0.6439
+  },
+  "Isolation Forest": {
+    "theta_star": 0.063757,
+    "min_cost_per_txn": 11.0162,
+    "cost_no_model": 29.2478,
+    "c_fp": 12.0,
+    "c_fn": 850.0,
+    "alert_rate_at_theta": 0.6696,
+    "amount_weighted_theta_star": 0.4197,
+    "amount_weighted_cost_per_txn": 5.0167,
+    "amount_weighted_alert_rate": 0.1088,
+    "recall_by_count": 0.4437,
+    "recall_by_value": 0.2458
+  },
+  "Autoencoder": {
+    "theta_star": 0.300006,
+    "min_cost_per_txn": 11.0743,
+    "cost_no_model": 29.2478,
+    "c_fp": 12.0,
+    "c_fn": 850.0,
+    "alert_rate_at_theta": 0.7,
+    "amount_weighted_theta_star": 0.8842,
+    "amount_weighted_cost_per_txn": 4.6788,
+    "amount_weighted_alert_rate": 0.1158,
+    "recall_by_count": 0.3775,
+    "recall_by_value": 0.3328
+  }
+}
