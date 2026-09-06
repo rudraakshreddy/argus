@@ -57,6 +57,8 @@ db/*.db-wal
 
 # ---- Report artefacts ----
 report/*.pdf
+# the published technical paper is tracked; build output is not
+!report/argus_report.pdf
 report/*.aux
 report/*.bbl
 report/*.bcf
@@ -100,3 +102,10 @@ desktop.ini
 .pytest_cache/
 .coverage
 htmlcov/
+*.pyc
+report/src/*.aux
+report/src/*.log
+report/src/*.out
+report/src/*.bbl
+report/src/*.blg
+report/src/*.toc
